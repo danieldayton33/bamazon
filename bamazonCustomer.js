@@ -53,7 +53,7 @@ const pickItem = ()=>{
             //check quantity available
             let quantity = parseInt(answer.quantity);
             if(response[0].stock_quantity > quantity){
-                updateStore(answer.item, quantity, response[0].stock_quantity, response[0].price);
+                updateStore(answer.item, quantity, response[0].stock_quantity, response[0].price, response[0].product_sales);
             }
             else{
                 inquirer.prompt([
@@ -78,10 +78,11 @@ const pickItem = ()=>{
     });
 }
 
-const updateStore = (item, quantity, currentQuanity, priceItem)=>{
+const updateStore = (item, quantity, currentQuanity, priceItem, product_sales)=>{
     const newQuantity = currentQuanity - quantity;
     let priceItems = quantity * priceItem;
-    connection.query("update products set stock_quantity =? where item_id =?", [newQuantity,item],
+    product_sales += priceItems;
+    connection.query("update products set stock_quantity =?, product_sales=? where item_id =?", [newQuantity,product_sales, item],
         function(err, response){
         if(err) throw err;
         console.log("That will be $" + priceItems + ", please!");
